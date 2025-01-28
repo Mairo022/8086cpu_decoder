@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CpuSimulation", "CpuSimulation.csproj", "{BE145294-B63E-42FA-B94C-4052546F163D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BE145294-B63E-42FA-B94C-4052546F163D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE145294-B63E-42FA-B94C-4052546F163D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE145294-B63E-42FA-B94C-4052546F163D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE145294-B63E-42FA-B94C-4052546F163D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
