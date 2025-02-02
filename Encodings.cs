@@ -1,4 +1,4 @@
-﻿namespace CpuSimulation;
+﻿namespace CpuDecoder8086;
 
 public static class Encodings
 {

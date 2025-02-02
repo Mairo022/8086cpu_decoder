@@ -5,6 +5,8 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <AssemblyName>CpuDecoder8086</AssemblyName>
+        <RootNamespace>CpuDecoder8086</RootNamespace>
     </PropertyGroup>
 
 </Project>

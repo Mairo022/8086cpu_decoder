@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CpuSimulation", "CpuSimulation.csproj", "{BE145294-B63E-42FA-B94C-4052546F163D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CpuDecoder8086", "CpuDecoder8086.csproj", "{BE145294-B63E-42FA-B94C-4052546F163D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

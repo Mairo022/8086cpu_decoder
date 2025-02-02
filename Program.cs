@@ -1,4 +1,4 @@
-﻿using static CpuSimulation.Encodings;
+﻿using static CpuDecoder8086.Encodings;
 
 if (args.Length == 0) return;
 
