@@ -71,6 +71,61 @@ while (fileReadStream.Read(buffer, 0 , 1) > 0)
                 break;
         }
     }
+    
+    if (binaryInput[..7] == "1100011")
+    {
+        var localBuffer = new byte[] { buffer[0], 0, 0, 0 };
+        fileReadStream.ReadExactly(localBuffer, 1, 1);
+        
+        var binaryStr = BytesToBinaryStr(localBuffer[0..2]);
+        var w = Convert.ToInt16(binaryStr[7].ToString(), 2);
+        var mod = Convert.ToInt16(binaryStr[8..10], 2);
+        var rm = Convert.ToInt16(binaryStr[13..], 2);
+
+        switch (mod)
+        {
+            case 0b00:
+                fileReadStream.ReadExactly(localBuffer, 0, w+1);
+                
+                var data0 = w == 0 
+                    ? (sbyte) localBuffer[0] 
+                    : BitConverter.ToInt16(localBuffer, 0);
+                
+                src = w == 0 
+                    ? $"byte {data0}" 
+                    : $"word {data0}";
+                
+                dest = AddressStr(ModMem[rm]);
+                break;
+            case 0b01:
+                fileReadStream.ReadExactly(localBuffer, 0, w+1+mod);
+                var disp8 = (sbyte) localBuffer[0];
+                
+                var data1 = w == 0 
+                    ? (sbyte) localBuffer[1] 
+                    : BitConverter.ToInt16(localBuffer, 1);
+                
+                src = w == 0
+                    ? $"byte {data1}" 
+                    : $"word {data1}";
+                dest = AddressStr(ModMem[rm], disp8);
+                
+                break;
+            case 0b10:
+                fileReadStream.ReadExactly(localBuffer, 0, w+1+mod);
+                var disp16 = BitConverter.ToInt16(localBuffer[..2], 0);
+
+                var data2 = w == 0 
+                    ? (sbyte) localBuffer[2] 
+                    : BitConverter.ToInt16(localBuffer, 2);
+                
+                src = w == 0
+                    ? $"byte {data2}" 
+                    : $"word {data2}";
+                dest = AddressStr(ModMem[rm], disp16);
+                break;
+        }
+    }
 
     if (binaryInput[..4] == "1011")
     {
@@ -94,6 +149,38 @@ while (fileReadStream.Read(buffer, 0 , 1) > 0)
             src = Convert.ToString(data);
             dest = ModRegOnly16[reg];
         }
+    }
+
+    if (binaryInput[..7] == "1010000")
+    {
+        var localBuffer = new byte[2];
+        var w = Convert.ToInt16(binaryInput[7].ToString(), 2);
+        
+        fileReadStream.ReadExactly(localBuffer, 0, w+1);
+
+        src = w == 0
+            ? localBuffer[0].ToString()
+            : $"[{BitConverter.ToInt16(localBuffer, 0).ToString()}]";
+        
+        dest = w == 0
+            ? ModRegOnly8[0]
+            : ModRegOnly16[0];
+    }
+    
+    if (binaryInput[..7] == "1010001")
+    {
+        var localBuffer = new byte[2];
+        var w = Convert.ToInt16(binaryInput[7].ToString(), 2);
+        
+        fileReadStream.ReadExactly(localBuffer, 0, w+1);
+        
+        src = w == 0
+            ? ModRegOnly8[0]
+            : ModRegOnly16[0];
+
+        dest = w == 0
+            ? localBuffer[0].ToString()
+            : $"[{BitConverter.ToInt16(localBuffer, 0).ToString()}]";
     }
     
     Console.WriteLine($"mov {dest}, {src}");
