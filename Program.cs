@@ -14,6 +14,7 @@ while (fileReadStream.Read(buffer, 0 , 1) > 0)
 {
     var binaryInput = BytesToBinaryStr(buffer);
 
+    // Reg & mem
     if (binaryInput[..6] == "100010")
     {
         var localBuffer = new byte[] { buffer[0], 0 };
@@ -72,7 +73,8 @@ while (fileReadStream.Read(buffer, 0 , 1) > 0)
         }
     }
     
-    if (binaryInput[..7] == "1100011")
+    // Immediate to reg/mem
+    else if (binaryInput[..7] == "1100011")
     {
         var localBuffer = new byte[] { buffer[0], 0, 0, 0 };
         fileReadStream.ReadExactly(localBuffer, 1, 1);
@@ -127,7 +129,8 @@ while (fileReadStream.Read(buffer, 0 , 1) > 0)
         }
     }
 
-    if (binaryInput[..4] == "1011")
+    // Immediate to reg
+    else if (binaryInput[..4] == "1011")
     {
         var localBuffer = new byte[2];
         
@@ -151,7 +154,8 @@ while (fileReadStream.Read(buffer, 0 , 1) > 0)
         }
     }
 
-    if (binaryInput[..7] == "1010000")
+    // Mem to acc
+    else if (binaryInput[..7] == "1010000")
     {
         var localBuffer = new byte[2];
         var w = Convert.ToInt16(binaryInput[7].ToString(), 2);
@@ -167,7 +171,8 @@ while (fileReadStream.Read(buffer, 0 , 1) > 0)
             : ModRegOnly16[0];
     }
     
-    if (binaryInput[..7] == "1010001")
+    // Acc to mem
+    else if (binaryInput[..7] == "1010001")
     {
         var localBuffer = new byte[2];
         var w = Convert.ToInt16(binaryInput[7].ToString(), 2);
