@@ -1,5 +1,7 @@
 ﻿using static CpuDecoder8086.Encodings;
 
+var registry = new ushort[8];
+
 if (args.Length == 0) return;
 
 using var fileReadStream = new FileStream(args[0], FileMode.Open, FileAccess.Read);
@@ -14,6 +16,7 @@ while (fileReadStream.Read(buffer, 0 , 1) > 0)
 {
     var binaryInput = BytesToBinaryStr(buffer);
     
+    // MOV
     // Reg & mem
     if (binaryInput[..6] == "100010")
     {
@@ -69,6 +72,9 @@ while (fileReadStream.Read(buffer, 0 , 1) > 0)
             case 0b11:
                 src = w == 1 ? ModRegOnly16[reg] : ModRegOnly8[reg];
                 dest = w == 1 ? ModRegOnly16[rm] : ModRegOnly8[rm];
+
+                registry[rm] = registry[reg];
+
                 break;
         }
         
@@ -143,18 +149,24 @@ while (fileReadStream.Read(buffer, 0 , 1) > 0)
 
         if (w == 0)
         {
+            
             fileReadStream.ReadExactly(localBuffer, 0, 1);
             
             src = Convert.ToString(localBuffer[0]);
             dest = ModRegOnly8[reg];
+            
+            SetLowerBits(ref registry[reg], localBuffer[0]);
         }
         else
         {
             fileReadStream.ReadExactly(localBuffer, 0, 2);
-            var data = BitConverter.ToInt16(localBuffer, 0);
+            var data = BitConverter.ToUInt16(localBuffer, 0);
 
             src = Convert.ToString(data);
             dest = ModRegOnly16[reg];
+            
+            if (data > byte.MaxValue) registry[reg] = data;
+            else SetUpperBits(ref registry[reg], data);
         }
         
         Console.WriteLine($"mov {dest}, {src}");
@@ -513,6 +525,8 @@ while (fileReadStream.Read(buffer, 0 , 1) > 0)
     else break;
 }
 
+PrintRegister();
+
 return;
 
 static string BytesToBinaryStr(byte[] bytes)
@@ -530,4 +544,26 @@ static string BytesToBinaryStr(byte[] bytes)
 static string AddressStr(string addr, int disp = 0)
 {
     return disp == 0 ? $"[{addr}]" : $"[{addr} + {disp}]";
+}
+
+ushort GetLowerBits(ushort value) => (ushort) (value & 0xFF);
+ushort GetUpperBits(ushort value) => (ushort) (value >> 8);
+void SetLowerBits(ref ushort arrItemRef, ushort value) => arrItemRef = (ushort) (arrItemRef & 0xFF00 | value);
+void SetUpperBits(ref ushort arrItemRef, ushort value) => arrItemRef = (ushort) (arrItemRef & 0x00FF | (value << 8));
+
+void PrintRegister()
+{
+    string[] names = ["ax", "cx", "dx", "bx", "sp", "bp", "si", "di"];
+
+    Console.WriteLine("\nRegistry");
+    Console.WriteLine("--------");
+    for (var i = 0; i < names.Length; i++)
+    {
+        var val = registry[i];
+        
+        if (i < 4) 
+            Console.WriteLine($"{names[i]}={val}, l={GetLowerBits(val)} h={GetUpperBits(val)}");
+        else 
+            Console.WriteLine(names[i] + " = " + val);
+    }
 }
